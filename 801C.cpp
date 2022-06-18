@@ -7,7 +7,7 @@ typedef unsigned int u_int;
 
 int n, m;
 
-int count(int **matrix, int i, int j, int **dp){
+int count(int **matrix, int i, int j, int **dp, int c){
 	if( (i == n && j == m-1) || (i == n-1 && j == m) )
 		return 0;	
 	else if(i == n || j == m)
@@ -16,25 +16,17 @@ int count(int **matrix, int i, int j, int **dp){
 	if(dp[i][j] != -10)
 		return dp[i][j];
 		
-	int a = count(matrix, i+1, j, dp);
-	int b = count(matrix, i, j+1, dp);
+	int a = count(matrix, i+1, j, dp, c);
+	int b = count(matrix, i, j+1, dp, c);
 	
-	int x = n-i;
-	int y = m-j;
-	
-	if(matrix[i][j] == 1){
+	if(matrix[i][j] == c){
 		a += 1;
 		b += 1;
 	}
 	
 	
 	int& ret = dp[i][j];
-	if(a == (x+y-1)/2 || ((x+y)%2 == 0 && a == (x+y-1)/2+1)){
-		ret = a;
-	}else if(b == (x+y-1)/2 || ((x+y)%2 == 0 && b == (x+y-1)/2+1))
-		ret = b;
-	else 
-		ret = -2;
+	ret = max(a, b);
 		
 	return ret;
 }
@@ -57,7 +49,15 @@ void solve(){
 	if((n+m)%2 == 0)
 		cout<<"NO\n";
 	else{
-		cout<<(count(matrix, 0, 0, dp) == (n+m-1)/2 ? "YES\n" : "NO\n");
+		int a = count(matrix, 0, 0, dp, 1);
+		for(int i = 0; i < n; i++){
+			for(int j = 0; j < m; j++){
+				dp[i][j] = -10;
+			}
+		}
+		int b = count(matrix, 0, 0, dp, -1);
+		
+		cout<<(a >= (n+m-1)/2 && b >= (n+m-1)/2 ? "YES\n" : "NO\n");
 	}
 	
 	delete [] matrix;
